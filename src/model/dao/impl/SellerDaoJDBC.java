@@ -49,23 +49,10 @@ public class SellerDaoJDBC implements SellerDao {
             rs = st.executeQuery(); // executa a consulta
 
             // Verifica se a consulta retornou algum registro
-            if (rs.next()){
-
-                // Pegando os valores dos campos do Department
-                Department dep = new Department();
-                dep.setId(rs.getInt("DepartmentId"));
-                dep.setName(rs.getString("DepName"));
-
-                // Pegando os valores dos campos do Seller e associando com Department
-                Seller obj = new Seller();
-                obj.setId(rs.getInt("Id"));
-                obj.setName(rs.getString("Name"));
-                obj.setEmail(rs.getString("Email"));
-                obj.setBaseSalary(rs.getDouble("BaseSalary"));
-                obj.setBirthDate(rs.getDate("BirthDate").toLocalDate());
-                obj.setDepartment(dep);
+            if (rs.next()) {
+                Department dep = instantiateDepartment(rs); // Intancia o objeto dep
+                Seller obj = instantiateSeller(rs, dep); // Instancia o objeto obj
                 return obj;
-
             }
             return null; // se pular o if, retorna null
         }
@@ -76,6 +63,28 @@ public class SellerDaoJDBC implements SellerDao {
             DB.closeStatement(st);
             DB.closeResultSet(rs);
         }
+    }
+
+    private Department instantiateDepartment(ResultSet rs) throws SQLException { // propagando a exception
+
+        Department dep = new Department();
+        // Pegando os valores dos campos do Department
+        dep.setId(rs.getInt("DepartmentId"));
+        dep.setName(rs.getString("DepName"));
+        return dep;
+    }
+
+    private Seller instantiateSeller(ResultSet rs, Department dep) throws SQLException { // propagando a exception
+
+        Seller obj = new Seller();
+        // Pegando os valores dos campos do Seller e associando com Department
+        obj.setId(rs.getInt("Id"));
+        obj.setName(rs.getString("Name"));
+        obj.setEmail(rs.getString("Email"));
+        obj.setBaseSalary(rs.getDouble("BaseSalary"));
+        obj.setBirthDate(rs.getDate("BirthDate").toLocalDate());
+        obj.setDepartment(dep);
+        return obj;
     }
 
     @Override
