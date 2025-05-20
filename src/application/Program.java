@@ -5,6 +5,7 @@ import model.dao.SellerDao;
 import model.entities.Department;
 import model.entities.Seller;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -25,11 +26,18 @@ public class Program {
             System.out.println(obj);
         }
 
-        System.out.println("\n==== TEST 3 seller findByDepartment ====");
+        System.out.println("\n==== TEST 3 seller findAll ====");
         list = sellerDao.findAll();
         for (Seller obj : list){
             System.out.println(obj);
         }
+
+        System.out.println("\n==== TEST 4 seller insert ====");
+        LocalDate birthDate = LocalDate.of(1993, 10, 11);
+        Seller newSeller = new Seller(null, "greg", "greg@gmail.com", Date.valueOf(birthDate).toLocalDate(), 4000.0, department);
+        sellerDao.insert(newSeller); // insere no banco de dados o vendedor instanciado 
+        System.out.println("Inserted! New id = " + newSeller.getId());
+
 
     }
 }
