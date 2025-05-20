@@ -7,7 +7,6 @@ import model.entities.Department;
 import model.entities.Seller;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,9 +28,9 @@ public class SellerDaoJDBC implements SellerDao {
             // Comando SQL
             st = conn.prepareStatement(
                     "INSERT INTO seller "
-                    + "(Name, Email, BirthDate, BaseSalary, DepartmentId) "
-                    + "VALUES "
-                    + "(?, ?, ?, ?, ?)",
+                            + "(Name, Email, BirthDate, BaseSalary, DepartmentId) "
+                            + "VALUES "
+                            + "(?, ?, ?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS); // Retorna o id do novo vendedor inserido
 
             // Substituindo os place holders
@@ -44,9 +43,9 @@ public class SellerDaoJDBC implements SellerDao {
             // Executa o comando sql e retorna a quantidade de linhas afetadas
             int rowsAffected = st.executeUpdate();
 
-            if(rowsAffected > 0) {
+            if (rowsAffected > 0) {
                 ResultSet rs = st.getGeneratedKeys(); // Obtém o id do novo vendedor inserido
-                if(rs.next()){
+                if (rs.next()) {
                     int id = rs.getInt(1);
                     obj.setId(id);
                 }
@@ -58,8 +57,7 @@ public class SellerDaoJDBC implements SellerDao {
             }
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
-        }
-        finally {
+        } finally {
             DB.closeStatement(st);
         }
 
@@ -67,7 +65,32 @@ public class SellerDaoJDBC implements SellerDao {
 
     @Override
     public void update(Seller obj) {
+        PreparedStatement st = null;
+        try {
+            // Comando SQL
+            st = conn.prepareStatement(
+                    "UPDATE seller "
+                            + "SET Name = ?, Email = ?, BirthDate = ?, BaseSalary = ?, DepartmentId = ? "
+                            + "WHERE Id = ?");
 
+            //Substitui os place holders
+            st.setString(1, obj.getName());
+            st.setString(2, obj.getEmail());
+            st.setDate(3, java.sql.Date.valueOf(obj.getBirthDate()));
+            st.setDouble(4, obj.getBaseSalary());
+            st.setInt(5, obj.getDepartment().getId());
+            st.setInt(6, obj.getId());
+
+            // Executa o comando SQL
+            st.executeUpdate();
+
+        }
+        catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+        finally {
+            DB.closeStatement(st);
+        }
     }
 
     @Override
